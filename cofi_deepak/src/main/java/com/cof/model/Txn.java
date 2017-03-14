@@ -1,5 +1,6 @@
 package com.cof.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Txn {
@@ -53,12 +54,12 @@ public class Txn {
 	}
 
 
-	public String getClear_date() {
+	public long getClear_date() {
 		return clear_date;
 	}
 
 
-	public void setClear_date(String clear_date) {
+	public void setClear_date(long clear_date) {
 		this.clear_date = clear_date;
 	}
 
@@ -106,18 +107,18 @@ public class Txn {
 	private boolean isPending;
 	private long aggregation_time;
 	private String account_id;
-	private String clear_date;
+	private long clear_date;
 	private String transaction_id;
 	private String raw_merchant;
 	private String categorization;
 	private String merchant;
-	private Date transaction_time;
-	public Date getTransaction_time() {
+	private LocalDate transaction_time;
+	public LocalDate getTransaction_time() {
 		return transaction_time;
 	}
 
 
-	public void setTransaction_time(Date transaction_time) {
+	public void setTransaction_time(LocalDate transaction_time) {
 		this.transaction_time = transaction_time;
 	}
 		

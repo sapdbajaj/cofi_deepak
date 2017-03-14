@@ -1,18 +1,22 @@
 package com.cof.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Txns {
+
 	@Override
 	public String toString() {
-		return "Txns [txns=" + txns + "]";
+		return "transactions [" + txns + "]";
 	}
 
-	public Txn getTxns() {
+	public List<Txn> getTxns() {
 		return txns;
 	}
 
-	public void setTxns(Txn txns) {
-		this.txns = txns;
+	public void setTxns(List<Txn> liTxn) {
+		this.txns = liTxn;
 	}
 
-	private Txn txns;
+	List<Txn> txns ;
 }

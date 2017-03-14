@@ -3,6 +3,8 @@ package com.cof.deepak;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,47 +12,73 @@ import javax.json.Json;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
-import com.cof.model.Address;
-import com.cof.model.Employee;
+import com.cof.model.Txn;
+import com.cof.model.Txns;
+import com.cof.model.State;
 
 public class TxnJSONParser {
 
-	public static final String FILE_NAME = "employee.txt";
+	public static final String FILE_NAME = "txns.json";
 
 	public static void main(String[] args) throws IOException {
 		InputStream fis = new FileInputStream(FILE_NAME);
 
 		JsonParser jsonParser = Json.createParser(fis);
 
-		/**
-		 * We can create JsonParser from JsonParserFactory also with below code
-		 * JsonParserFactory factory = Json.createParserFactory(null);
-		 * jsonParser = factory.createParser(fis);
-		 */
-
-		Employee emp = new Employee();
-		Address address = new Address();
-		String keyName = null;
-		List<Long> phoneNums = new ArrayList<Long>();
+		Txns txns=null;
+		Txn t=null;
+		String keyName = null;		
+		State state =State.INIT;
 		
 		while (jsonParser.hasNext()) {
 			Event event = jsonParser.next();
 			switch (event) {
+			
+			case START_OBJECT:
+				if (txns !=null && txns.getTxns()!=null) {
+					t = new Txn();
+					txns.getTxns().add(t);
+					if (state !=State.TXN ) state = State.TXN ; 
+				}
+				else{
+					txns = new Txns();
+					state = State.TXNS;				
+				}
+				break;
+				
+			case END_OBJECT:
+				//TODO: Validate the txn object here, if needed 
+				if (state!=State.TXN && txns==null || txns.getTxns().isEmpty()) throw new TxnException("No Transactions found");
+				break;
+				
+			case START_ARRAY:
+				txns.setTxns(new ArrayList<Txn>());
+				break;
+				
+			case END_ARRAY:
+				state = State.TXNS;	
+				break;
+				
 			case KEY_NAME:
 				keyName = jsonParser.getString();
 				break;
+				
 			case VALUE_STRING:
-				setStringValues(emp, address, keyName, jsonParser.getString());
+				setStringValues(t, keyName, jsonParser.getString());
 				break;
+				
 			case VALUE_NUMBER:
-				setNumberValues(emp, address, keyName, jsonParser.getLong(), phoneNums);
+				setNumberValues(t, keyName, jsonParser.getLong());
 				break;
+				
 			case VALUE_FALSE:
-				setBooleanValues(emp, address, keyName, false);
+				setBooleanValues(t, keyName, false);
 				break;
+				
 			case VALUE_TRUE:
-				setBooleanValues(emp, address, keyName, true);
+				setBooleanValues(t, keyName, true);
 				break;
+				
 			case VALUE_NULL:
 				// don't set anything
 				break;
@@ -58,61 +86,64 @@ public class TxnJSONParser {
 				// we are not looking for other events
 			}
 		}
-		emp.setAddress(address);
-		long[] nums = new long[phoneNums.size()];
-		int index = 0;
-		for(Long l :phoneNums){
-			nums[index++] = l;
-		}
-		emp.setPhoneNumbers(nums);
 		
-		System.out.println(emp);
+		System.out.println(txns);
 		
 		//close resources
 		fis.close();
 		jsonParser.close();
 	}
 
-	private static void setNumberValues(Employee emp, Address address,
-			String keyName, long value, List<Long> phoneNums) {
+	private static void setNumberValues(Txn t,
+			String keyName, long value) {
 		switch(keyName){
-		case "zipcode":
-			address.setZipcode((int)value);
+		case "amount":
+			t.setAmount(value);
 			break;
-		case "id":
-			emp.setId((int) value);
+		case "aggregation-time":
+			t.setAggregation_time(value);
 			break;
-		case "phoneNumbers":
-			phoneNums.add(value);
+		case "clear-date":
+			t.setClear_date(value);
 			break;
 		default:
 			System.out.println("Unknown element with key="+keyName);	
 		}
 	}
 
-	private static void setBooleanValues(Employee emp, Address address,
+	private static void setBooleanValues(Txn t, 
 			String key, boolean value) {
-		if("permanent".equals(key)){
-			emp.setPermanent(value);
+		if("is-pending".equals(key)){
+			t.setPending(value);
 		}else{
 			System.out.println("Unknown element with key="+key);
 		}
 	}
 
-	private static void setStringValues(Employee emp, Address address,
-			String key, String value) {
+	private static void setStringValues(Txn t, String key, String value) {
 		switch(key){
-		case "name":
-			emp.setName(value);
+		case "error":
+			if(value.compareToIgnoreCase("no-error")!=0) throw new TxnException("Unable to get txn data");
 			break;
-		case "role":
-			emp.setRole(value);
+		case "transaction":
 			break;
-		case "city":
-			address.setCity(value);
+		case "account-id":
+			t.setAccount_id(value);
 			break;
-		case "street":
-			address.setStreet(value);
+		case "transaction-id":
+			t.setTransaction_id(value);
+			break;
+		case "raw-merchant":
+			t.setRaw_merchant(value);
+			break;
+		case "categorization":
+			t.setCategorization(value);
+			break;
+		case "merchant":
+			t.setMerchant(value);
+			break;
+		case "transaction-time":
+			t.setTransaction_time(LocalDate.parse(value,DateTimeFormatter.ISO_INSTANT));
 			break;
 		default:
 			System.out.println("Unkonwn Key="+key);
