@@ -1,0 +1,1 @@
+curl -H 'Accept: application/json' -H 'Content-Type: application/json' -X POST -d '{"email": "level@example.com", "password": "incorrect_password", "args": {"uid": 1110590645, "token": "242F0630905A27E08CFF0B363E215C4C", "api-token": "AppTokenForInterview", "json-strict-mode": false, "json-verbose-response": false}}' https://2016.api.levelmoney.com/api/v2/core/login
