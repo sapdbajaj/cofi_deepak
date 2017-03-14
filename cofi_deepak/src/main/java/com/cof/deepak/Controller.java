@@ -63,6 +63,9 @@ public class Controller {
 		return httpConnection ; 
 	}
 	
+	public void writeRsp(){
+		
+	}
 	public void createRsp(HttpsURLConnection httpConnection){
 	 StringBuilder sb=new StringBuilder();
 	 	try{
