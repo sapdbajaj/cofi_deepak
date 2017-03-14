@@ -7,7 +7,7 @@ public class Txns {
 
 	@Override
 	public String toString() {
-		return "transactions [" + txns + "]";
+		return "transactions" + txns ;
 	}
 
 	public List<Txn> getTxns() {

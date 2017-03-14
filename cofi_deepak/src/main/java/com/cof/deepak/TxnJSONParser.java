@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.json.Json;
 import javax.json.stream.JsonParser;
@@ -18,7 +18,7 @@ import com.cof.model.State;
 
 public class TxnJSONParser {
 
-	public static final String FILE_NAME = "txns.json";
+	public static final String FILE_NAME = "txn.json";
 
 	public static void main(String[] args) throws IOException {
 		InputStream fis = new FileInputStream(FILE_NAME);
@@ -47,7 +47,6 @@ public class TxnJSONParser {
 				break;
 				
 			case END_OBJECT:
-				//TODO: Validate the txn object here, if needed 
 				if (state!=State.TXN && txns==null || txns.getTxns().isEmpty()) throw new TxnException("No Transactions found");
 				break;
 				
@@ -143,7 +142,8 @@ public class TxnJSONParser {
 			t.setMerchant(value);
 			break;
 		case "transaction-time":
-			t.setTransaction_time(LocalDate.parse(value,DateTimeFormatter.ISO_INSTANT));
+			String tmp[]=value.split(Pattern.quote("."));
+			t.setTransaction_time(LocalDate.parse(tmp[0],DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 			break;
 		default:
 			System.out.println("Unkonwn Key="+key);
