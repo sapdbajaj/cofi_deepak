@@ -19,81 +19,86 @@ import com.cof.model.State;
 public class TxnJSONParser {
 
 	public static final String FILE_NAME = "txn.json";
-
-	public static void main(String[] args) throws IOException {
-		InputStream fis = new FileInputStream(FILE_NAME);
-
-		JsonParser jsonParser = Json.createParser(fis);
-
-		Txns txns=null;
-		Txn t=null;
-		String keyName = null;		
-		State state =State.INIT;
+	
+	public Txns parse(InputStream is){
+	Txns txns=null;
+	JsonParser jsonParser = Json.createParser(is);
+	Txn t=null;
+	String keyName = null;		
+	State state =State.INIT;
+	
+	while (jsonParser.hasNext()) {
+		Event event = jsonParser.next();
+		switch (event) {
 		
-		while (jsonParser.hasNext()) {
-			Event event = jsonParser.next();
-			switch (event) {
-			
-			case START_OBJECT:
-				if (txns !=null && txns.getTxns()!=null) {
-					t = new Txn();
-					txns.getTxns().add(t);
-					if (state !=State.TXN ) state = State.TXN ; 
-				}
-				else{
-					txns = new Txns();
-					state = State.TXNS;				
-				}
-				break;
-				
-			case END_OBJECT:
-				if (state!=State.TXN && txns==null || txns.getTxns().isEmpty()) throw new TxnException("No Transactions found");
-				break;
-				
-			case START_ARRAY:
-				txns.setTxns(new ArrayList<Txn>());
-				break;
-				
-			case END_ARRAY:
-				state = State.TXNS;	
-				break;
-				
-			case KEY_NAME:
-				keyName = jsonParser.getString();
-				break;
-				
-			case VALUE_STRING:
-				setStringValues(t, keyName, jsonParser.getString());
-				break;
-				
-			case VALUE_NUMBER:
-				setNumberValues(t, keyName, jsonParser.getLong());
-				break;
-				
-			case VALUE_FALSE:
-				setBooleanValues(t, keyName, false);
-				break;
-				
-			case VALUE_TRUE:
-				setBooleanValues(t, keyName, true);
-				break;
-				
-			case VALUE_NULL:
-				// don't set anything
-				break;
-			default:
-				// we are not looking for other events
+		case START_OBJECT:
+			if (txns !=null && txns.getTxns()!=null) {
+				t = new Txn();
+				txns.getTxns().add(t);
+				if (state !=State.TXN ) state = State.TXN ; 
 			}
+			else{
+				txns = new Txns();
+				state = State.TXNS;				
+			}
+			break;
+			
+		case END_OBJECT:
+			if (state!=State.TXN && txns==null || txns.getTxns().isEmpty()) throw new TxnException("No Transactions found");
+			break;
+			
+		case START_ARRAY:
+			txns.setTxns(new ArrayList<Txn>());
+			break;
+			
+		case END_ARRAY:
+			state = State.TXNS;	
+			break;
+			
+		case KEY_NAME:
+			keyName = jsonParser.getString();
+			break;
+			
+		case VALUE_STRING:
+			setStringValues(t, keyName, jsonParser.getString());
+			break;
+			
+		case VALUE_NUMBER:
+			setNumberValues(t, keyName, jsonParser.getLong());
+			break;
+			
+		case VALUE_FALSE:
+			setBooleanValues(t, keyName, false);
+			break;
+			
+		case VALUE_TRUE:
+			setBooleanValues(t, keyName, true);
+			break;
+			
+		case VALUE_NULL:
+
+			break;
+		default:
+
 		}
-		
+	}
+	jsonParser.close();
+	return txns;	
+	}
+	
+	public static void main(String[] args) throws IOException {
+		TxnJSONParser tmp=new TxnJSONParser();
+		FileInputStream fis=new FileInputStream(FILE_NAME);
+		Txns txns=tmp.parse(fis);
 		System.out.println(txns);
 		
 		//close resources
 		fis.close();
-		jsonParser.close();
+		txns=null;
+		tmp=null;
 	}
 
-	private static void setNumberValues(Txn t,
+	private void setNumberValues(Txn t,
 			String keyName, long value) {
 		switch(keyName){
 		case "amount":
@@ -110,7 +115,7 @@ public class TxnJSONParser {
 		}
 	}
 
-	private static void setBooleanValues(Txn t, 
+	private void setBooleanValues(Txn t, 
 			String key, boolean value) {
 		if("is-pending".equals(key)){
 			t.setPending(value);
@@ -119,7 +124,7 @@ public class TxnJSONParser {
 		}
 	}
 
-	private static void setStringValues(Txn t, String key, String value) {
+	private void setStringValues(Txn t, String key, String value) {
 		switch(key){
 		case "error":
 			if(value.compareToIgnoreCase("no-error")!=0) throw new TxnException("Unable to get txn data");

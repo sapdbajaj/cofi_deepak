@@ -1,6 +1,7 @@
 package com.cof.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Txns {
@@ -18,5 +19,10 @@ public class Txns {
 		this.txns = liTxn;
 	}
 
+	public void sort(){
+		// sort the txns on transaction time
+		Collections.sort(txns,(a,b)->a.getTransaction_time().compareTo(b.getTransaction_time()));	
+		}
+	
 	List<Txn> txns ;
 }

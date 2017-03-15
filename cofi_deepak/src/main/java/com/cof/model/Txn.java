@@ -3,7 +3,25 @@ package com.cof.model;
 import java.time.LocalDate;
 import java.util.Date;
 
-public class Txn {
+public class Txn  {
+
+	/*@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Txn other = (Txn) obj;
+		if (transaction_time == null) {
+			if (other.transaction_time != null)
+				return false;
+		} else if (transaction_time.getYear()!=other.transaction_time.getYear() || transaction_time.getMonth()!=other.transaction_time.getMonth())
+			return false;
+		return true;
+	}*/
+
 
 	@Override
 	public String toString() {
