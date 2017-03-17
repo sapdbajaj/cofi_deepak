@@ -123,7 +123,7 @@ public class Txn  {
 	public void setMerchant(String merchant) {
 		this.merchant = merchant;
 	}
-	final static DateTimeFormatter fmtYearMonth = DateTimeFormatter.ofPattern("yyyy-MM");
+	final public static DateTimeFormatter fmtYearMonth = DateTimeFormatter.ofPattern("yyyy-MM");
 	
 	private double amount;
 	private double spent;
@@ -166,8 +166,5 @@ public class Txn  {
 		this.transaction_time = transaction_time;
 	}
 	
-	Function<Txn, Expense> getExpense = new Function<Txn, Expense>() {
-    public Expense apply(Txn t) {
-    	return new Expense(t.income,t.spent, t.transaction_time);}
-    };
+
 }

@@ -37,6 +37,10 @@ public class Expense  {
 		this.transaction_time = transaction_time;
 	}
 	
+	public String getYearMonth() {
+		return transaction_time.format(Txn.fmtYearMonth);
+	}
+	
 	public Expense sum(Expense e1, Expense e2){
 		if (e1.transaction_time == e2.transaction_time)
 		 return new Expense(e1.income+e2.income, e1.spent+ e2.spent, e1.transaction_time);
