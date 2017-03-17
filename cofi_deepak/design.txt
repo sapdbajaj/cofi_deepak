@@ -1,0 +1,30 @@
+input stream 
+"transactions": 
+	[
+		{
+			"amount": -34300,
+			"is-pending": false,
+			"aggregation-time": 1412686740000,
+			"account-id": "nonce:comfy-cc/hdhehe",
+			"clear-date": 1412790480000,
+			"transaction-id": "1412790480000",
+			"raw-merchant": "7-ELEVEN 23853",
+			"categorization": "Unknown",
+			"merchant": "7-Eleven 23853",
+			"transaction-time": "2014-12-07T12:59:00.000Z"
+		},
+
+		{
+			"amount": -30200,
+			"is-pending": false,
+			"aggregation-time": 1412702940000,
+			"account-id": "nonce:comfy-cc/hdhehe",
+			"clear-date": 1412985120000,
+			"transaction-id": "1412985120000",
+			"raw-merchant": "SUNOCO 0299792200",
+			"categorization": "Unknown",
+			"merchant": "Sunoco",
+			"transaction-time": "2014-10-07T17:29:00.000Z"
+		}
+	]
+	

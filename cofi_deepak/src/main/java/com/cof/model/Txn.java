@@ -1,7 +1,9 @@
 package com.cof.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.function.Function;
 
 public class Txn  {
 
@@ -39,6 +41,7 @@ public class Txn  {
 
 	public void setAmount(double amount) {
 		this.amount = amount;
+		if (amount >=0) income=amount; else spent=amount ;
 	}
 
 
@@ -120,8 +123,29 @@ public class Txn  {
 	public void setMerchant(String merchant) {
 		this.merchant = merchant;
 	}
-
+	final static DateTimeFormatter fmtYearMonth = DateTimeFormatter.ofPattern("yyyy-MM");
+	
 	private double amount;
+	private double spent;
+	public double getSpent() {
+		return spent;
+	}
+
+
+	public void setSpent(double spent) {
+		this.spent = spent;
+	}
+
+
+	public double getIncome() {
+		return income;
+	}
+
+
+	public void setIncome(double income) {
+		this.income = income;
+	}
+	private double income;
 	private boolean isPending;
 	private long aggregation_time;
 	private String account_id;
@@ -131,14 +155,19 @@ public class Txn  {
 	private String categorization;
 	private String merchant;
 	private LocalDate transaction_time;
+	public String getYearMonth() {
+		return transaction_time.format(fmtYearMonth);
+	}
 	public LocalDate getTransaction_time() {
 		return transaction_time;
 	}
 
-
 	public void setTransaction_time(LocalDate transaction_time) {
 		this.transaction_time = transaction_time;
 	}
-		
 	
+	Function<Txn, Expense> getExpense = new Function<Txn, Expense>() {
+    public Expense apply(Txn t) {
+    	return new Expense(t.income,t.spent, t.transaction_time);}
+    };
 }
