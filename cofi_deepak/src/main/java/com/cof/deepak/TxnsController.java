@@ -18,10 +18,7 @@ import com.cof.model.Expense;
 
 public class TxnsController {
 
-	Function<Txn, Expense> getExpense = new Function<Txn, Expense>() {
-	    public Expense apply(Txn t) {
-	    	return new Expense(t.getIncome(),t.getSpent());}
-	    };
+	Function<Txn, Expense> getExpense = (t)-> {return new Expense(t.getIncome(),t.getSpent());};
  
 	public void test() { 
 		List <Txn> txns = getTxns();
@@ -54,18 +51,20 @@ public class TxnsController {
 
 	public void test2() { 
 		List <Txn> txns = getTxns();
+
+		Collector<Txn,Expense, Expense> myCollector=Collector.of(
+				  Expense::new,
+				  (Expense e, Txn t) -> e.add(t),
+				  (e1, e2) -> new Expense(e1, e2)
+				   );
 		Map<String, Expense > a =
 			    txns
 			        .stream()
 			        .collect(
 			            Collectors.groupingBy(
 			                Txn::getYearMonth, 
-			                mapping(getExpense,
-			                		Collector.of(
-			                				  Expense::new,
-			                				  (Expense e, Txn t) -> e.add(t),
-			                				  (e1, e2) -> new Expense(e1, e2)
-			                				   )))
+			                Collectors.mapping(getExpense,myCollector
+			                		))
 			            	);
 		System.out.println(a);
 	}
