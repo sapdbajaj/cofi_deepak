@@ -155,6 +155,7 @@ public class Txn  {
 	private String categorization;
 	private String merchant;
 	private LocalDate transaction_time;
+	
 	public String getYearMonth() {
 		return transaction_time.format(fmtYearMonth);
 	}

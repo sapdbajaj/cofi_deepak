@@ -1,30 +1,33 @@
 input stream 
-"transactions": 
-	[
-		{
-			"amount": -34300,
-			"is-pending": false,
-			"aggregation-time": 1412686740000,
-			"account-id": "nonce:comfy-cc/hdhehe",
-			"clear-date": 1412790480000,
-			"transaction-id": "1412790480000",
-			"raw-merchant": "7-ELEVEN 23853",
-			"categorization": "Unknown",
-			"merchant": "7-Eleven 23853",
-			"transaction-time": "2014-12-07T12:59:00.000Z"
-		},
-
-		{
-			"amount": -30200,
-			"is-pending": false,
-			"aggregation-time": 1412702940000,
-			"account-id": "nonce:comfy-cc/hdhehe",
-			"clear-date": 1412985120000,
-			"transaction-id": "1412985120000",
-			"raw-merchant": "SUNOCO 0299792200",
-			"categorization": "Unknown",
-			"merchant": "Sunoco",
-			"transaction-time": "2014-10-07T17:29:00.000Z"
-		}
+Txn [	
+		{amount: 1, id: "one", txnDate: "2013-11" }, 
+		{amount: -2, id: "two", txnDate: "2014-10"}, 
+		{amount: 2, id: "three", txnDate: "2014-10"},
+		{amount: -3, id: "four", txnDate: "2014-11"},
+		{amount: 6, id: "five", txnDate: "2014-11"},
+		{amount: 10, id: "six", txnDate: "2014-11"},
+		{amount: -5, id: "seven", txnDate: "2014-11"},
+		{amount: 20, id: "eight", txnDate: "2014-11"},
 	]
-	
+
+		
+Expense [	
+		{spent: 0, earned: 1,  txnDate: "2013-11" }, 
+		{spent: 2, earned: 2,  txnDate: "2014-10" }, 
+		{spent: 8, earned: 36,  txnDate: "2014-11" }
+		]
+		
+using Java8 streams Transform 
+List<Txn> to List<Expense> 
+
+List<Txn> = txns; 
+txns.stream().collect(
+                        Collectors.groupingBy(Txn::getTxnDate) // within each group
+                );
+
+given txn stream
+     group by yyyy-mm // fold 1 
+      within group Map to new object Expense(income, spent) 
+            if amount > 0 then income+=amt // conditional fold 2.a
+            if amount < 0 then spent+=amt // conditional fold 2.b
+     
