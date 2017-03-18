@@ -2,8 +2,7 @@ package com.cof.model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.function.Function;
+
 
 public class Txn  {
 

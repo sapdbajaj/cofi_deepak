@@ -1,6 +1,5 @@
 package com.cof.deepak;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import com.cof.model.Txns;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -34,7 +32,7 @@ public class Controller {
 	}
 	
 	public HttpsURLConnection doReq(String myURL, JsonObject jo) {
-		StringBuilder sb=new StringBuilder(1024);
+		//StringBuilder sb=new StringBuilder(1024);
 		HttpsURLConnection httpConnection =null;
 		try {
 

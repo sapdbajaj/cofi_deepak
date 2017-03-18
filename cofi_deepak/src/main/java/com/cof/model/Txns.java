@@ -6,6 +6,9 @@ import java.util.List;
 
 public class Txns {
 
+	public Txns() { 
+		txns = new ArrayList<Txn> ();
+	}
 	@Override
 	public String toString() {
 		return "transactions" + txns ;

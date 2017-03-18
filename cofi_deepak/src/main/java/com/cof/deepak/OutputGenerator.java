@@ -44,7 +44,7 @@ public class OutputGenerator {
 	
 	public static void main(String[] args) throws IOException {
 		OutputStream fos = new FileOutputStream("activity_out_stream.txt");
-		OutputGenerator og=new OutputGenerator(fos);
+		//OutputGenerator og=new OutputGenerator(fos);
 
 		fos.close();
 	}	
