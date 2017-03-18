@@ -41,7 +41,7 @@ public class Txn  {
 
 	public void setAmount(double amount) {
 		this.amount = amount;
-		if (amount >=0) income=amount; else spent=amount ;
+		if (amount >=0) in=amount; else out=amount ;
 	}
 
 
@@ -125,27 +125,27 @@ public class Txn  {
 	}
 	final public static DateTimeFormatter fmtYearMonth = DateTimeFormatter.ofPattern("yyyy-MM");
 	
-	private double amount;
-	private double spent;
-	public double getSpent() {
-		return spent;
+	public double getOut() {
+		return out;
 	}
 
 
-	public void setSpent(double spent) {
-		this.spent = spent;
+	public void setOut(double out) {
+		this.out = out;
 	}
 
 
-	public double getIncome() {
-		return income;
+	public double getIn() {
+		return in;
 	}
 
 
-	public void setIncome(double income) {
-		this.income = income;
+	public void setIn(double in) {
+		this.in = in;
 	}
-	private double income;
+	private double amount ; 
+	private double in;
+	private double out;
 	private boolean isPending;
 	private long aggregation_time;
 	private String account_id;
@@ -167,5 +167,5 @@ public class Txn  {
 		this.transaction_time = transaction_time;
 	}
 	
-
+	
 }

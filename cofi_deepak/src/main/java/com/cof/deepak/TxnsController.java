@@ -17,9 +17,9 @@ import com.cof.model.Txn;
 import com.cof.model.Expense;
 
 public class TxnsController {
-
-	Function<Txn, Expense> getExpense = (t)-> {return new Expense(t.getIncome(),t.getSpent());};
- 
+	
+	
+	Function<Txn, Expense> getExpense = (t)-> new Expense(t.getIn(),t.getOut());
 	public void test() { 
 		List <Txn> txns = getTxns();
 		Map<String, List<Expense>> a =
@@ -52,21 +52,21 @@ public class TxnsController {
 	public void test2() { 
 		List <Txn> txns = getTxns();
 
-		Collector<Txn,Expense, Expense> myCollector=Collector.of(
-				  Expense::new,
-				  (Expense e, Txn t) -> e.add(t),
-				  (e1, e2) -> new Expense(e1, e2)
-				   );
 		Map<String, Expense > a =
 			    txns
 			        .stream()
 			        .collect(
 			            Collectors.groupingBy(
 			                Txn::getYearMonth, 
-			                Collectors.mapping(getExpense,myCollector
-			                		))
+			                Collector.of(
+			      				  Expense::new,
+			      				  ( e,  t) -> e.add(t),
+			      				  (e1, e2) -> new Expense(e1, e2)))
 			            	);
-		System.out.println(a);
+		
+		a.entrySet().forEach(entry -> {
+		    System.out.println("Key : " + entry.getKey() + " Income : " + entry.getValue().getIncome()+ " Spent : " + entry.getValue().getSpent());
+		}); 
 	}
 	
 	public List<Txn> getTxns() { 
@@ -87,10 +87,11 @@ public class TxnsController {
 			List<Txn> income=txns.stream()
 							.filter(t->t.getAmount()>=0)
 							.collect(Collectors.toList());
+			//System.out.println(income);
 			List<Txn> spent=txns.stream()
 					.filter(t->t.getAmount()<0)
 					.collect(Collectors.toList());
-					  
+			//System.out.println(spent);		  
 			// reduce stream to list of objects, for yearMonth with sum amounts for spend and income
 			// reduce stream to one, for average of all 
 			Map<String, Double> spentMap=
@@ -144,7 +145,7 @@ public class TxnsController {
 	
 	public static void main(String[] args) {
 		TxnsController tc=new TxnsController();
-		tc.test();
+		tc.test2();
 	}
 	
 }
