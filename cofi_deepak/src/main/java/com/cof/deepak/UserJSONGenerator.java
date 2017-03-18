@@ -16,7 +16,7 @@ public class UserJSONGenerator {
 		OutputStream fos = new FileOutputStream("C:/Users/deepa/downloads/user_stream.txt");
 		JsonGenerator jsonGenerator = Json.createGenerator(fos);
 		
-		User u = UserJSONWriter.createUser();
+		User u = ServiceJSONWriter.createUser();
 		Args a = u.getArgs();
 		jsonGenerator.writeStartObject(); // {
 		jsonGenerator.write("email", u.getEmail()); 

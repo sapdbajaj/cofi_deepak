@@ -10,9 +10,9 @@ import javax.json.JsonObjectBuilder;
 import com.cof.model.Args;
 import com.cof.model.User;
 
-public class UserJSONWriter {
+public class ServiceJSONWriter {
 
-	public JsonObject createTxns(){
+	public JsonObject getTxns(){
 		 	JsonObjectBuilder userBuilder = Json.createObjectBuilder();
 			userBuilder.add("args", createCore());
 			return userBuilder.build();
@@ -45,7 +45,7 @@ public class UserJSONWriter {
 	
 	
 	public static void main(String[] args) throws Exception {
-		UserJSONWriter w=new UserJSONWriter();	
+		ServiceJSONWriter w=new ServiceJSONWriter();	
 		//write to file
 		OutputStream os = new FileOutputStream("c:/users/deepa/Downloads/user.txt");
 		JsonObject jo=w.createLogin();
