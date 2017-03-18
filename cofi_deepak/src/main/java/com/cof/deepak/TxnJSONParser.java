@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.json.Json;
@@ -20,8 +21,7 @@ public class TxnJSONParser {
 
 	public static final String FILE_NAME = "txn.json";
 	
-	public Txns parse(InputStream is){
-	Txns txns=null;
+	public void parse(InputStream is, Txns txns){
 	JsonParser jsonParser = Json.createParser(is);
 	Txn t=null;
 	String keyName = null;		
@@ -32,13 +32,13 @@ public class TxnJSONParser {
 		switch (event) {
 		
 		case START_OBJECT:
-			if (txns !=null && txns.getTxns()!=null) {
+			if (txns !=null ) {
 				t = new Txn();
+				if(txns.getTxns()==null)txns.setTxns(new ArrayList<Txn> ());
 				txns.getTxns().add(t);
 				if (state !=State.TXN ) state = State.TXN ; 
 			}
 			else{
-				txns = new Txns();
 				state = State.TXNS;				
 			}
 			break;
@@ -83,13 +83,14 @@ public class TxnJSONParser {
 		}
 	}
 	jsonParser.close();
-	return txns;	
+
 	}
 	
 	public static void main(String[] args) throws IOException {
 		TxnJSONParser tmp=new TxnJSONParser();
 		FileInputStream fis=new FileInputStream(FILE_NAME);
-		Txns txns=tmp.parse(fis);
+		Txns txns=new Txns();
+		tmp.parse(fis, txns);
 		System.out.println(txns);
 		
 		//close resources

@@ -24,7 +24,9 @@ import javax.json.JsonObject;
 import javax.json.JsonWriter;
 
 public class Controller {
-	
+
+	protected Txns to;
+
 	public void createReq(JsonObject jo, OutputStream os) {
 		JsonWriter jsonWriter = Json.createWriter(os);
 		jsonWriter.writeObject(jo);
@@ -104,11 +106,11 @@ public class Controller {
 		 }
 	}
 	
-	public Txns createTxns(HttpsURLConnection httpConnection){
-		Txns txns= null;
+	public void createTxns(HttpsURLConnection httpConnection){
+		to = new Txns();
 		 	try{
 		 		TxnJSONParser tmp=new TxnJSONParser();
-				 txns=tmp.parse(httpConnection.getInputStream());								
+				 tmp.parse(httpConnection.getInputStream(), to);								
 				tmp=null;
 				httpConnection.disconnect();
 		 	}
@@ -121,8 +123,8 @@ public class Controller {
 				e.printStackTrace();
 
 			 }
-			return txns;
 		}
+	
 	// login the user 
 	public void login() { 
 		ServiceJSONWriter w=new ServiceJSONWriter();	
@@ -132,21 +134,18 @@ public class Controller {
 		System.out.println("User JSON String\n"+uo);
 	}
 	
-	public Txns getTxns(){
+	public void initTxns(){
 		ServiceJSONWriter w=new ServiceJSONWriter();	
-		JsonObject to=w.getTxns();
-		System.out.println("Txns Req JSON String\n"+to);
+		JsonObject tjo=w.getTxns();
+		System.out.println("Txns Req JSON String\n"+tjo);
 		//createRsp(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",to));
-		return createTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",to));
-		
+		createTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",tjo));	
 	}
 	
 	public void process(String filename){
-		// get list of txns from service end point
-		 List <Txn> txns = getTxns().getTxns();
-
-		 // prcess txns
-		 Map<String,Activity> myMap =   txns.stream().collect(
+		 // process txns
+		 // TODO: Move processing of txns to separate thread, fetching separate stream processing incoming txns concurrently
+		 Map<String,Activity> myMap =   to.getTxns().stream().collect(
 				 Collectors.groupingBy(Txn::getYearMonth, Collector.of(Activity::new, Activity::accept, Activity::combine))
 						 	);
 		// calculate the average node and add to the map 
@@ -181,6 +180,7 @@ public class Controller {
 	
 	public static void main(String[] args) throws Exception {
 		Controller ctrl=new Controller();
+		ctrl.initTxns();
 		ctrl.process("activity_out.txt");
 	}
 }

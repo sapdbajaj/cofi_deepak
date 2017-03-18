@@ -35,7 +35,8 @@ public class TxnsController {
 		try{
 		TxnJSONParser tmp=new TxnJSONParser();
 		FileInputStream fis= new FileInputStream(TxnJSONParser.FILE_NAME);
-		Txns txns=tmp.parse(fis);
+		Txns txns = new Txns();
+		tmp.parse(fis, txns);
 		return txns.getTxns();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
