@@ -23,20 +23,29 @@ public class OutputGenerator {
 	 jsonGenerator = Json.createGenerator(os);	
 	}
 	
-	public void write(Map<String, Activity> myMap) throws IOException {
-		jsonGenerator.writeStartObject(); // {
-		myMap.entrySet().stream().sorted(Map.Entry.<String, Activity>comparingByKey()).forEach(entry -> {
+	public void start() {
+		jsonGenerator.writeStartObject(); // {	
+	}
+	
+	public void end () {
+		jsonGenerator.writeEnd(); // }		
+		jsonGenerator.close();
+	}
+	public void write(Map.Entry<String, Activity> entry) throws IOException {
+		
+		//myMap.entrySet().stream().sorted(Map.Entry.<String, Activity>comparingByKey()).forEach(entry -> {
 			jsonGenerator.writeStartObject(entry.getKey()); // { for key 
 			jsonGenerator.write("spent :", currencyFormatter.format(entry.getValue().getSpent())); 
 			jsonGenerator.write("income :", currencyFormatter.format(entry.getValue().getIncome())); 
 			jsonGenerator.writeEnd(); // }	
-		 }); 
-		jsonGenerator.writeEnd(); // }	
+		 //}); 
+		
 	}
 	
 	public static void main(String[] args) throws IOException {
 		OutputStream fos = new FileOutputStream("activity_out_stream.txt");
-		
+		OutputGenerator og=new OutputGenerator(fos);
+
 		fos.close();
 	}	
 

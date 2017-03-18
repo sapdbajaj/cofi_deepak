@@ -2,35 +2,20 @@ package com.cof.deepak;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.time.format.DateTimeFormatter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.Map;
-import java.util.function.*;
 
 import com.cof.model.Txns;
 
 import com.cof.model.Txn;
-import com.cof.model.Expense;
+import com.cof.model.Activity;
 
 public class TxnsController {
-	
-	
-	Function<Txn, Expense> getExpense = (t)-> new Expense(t.getIn(),t.getOut());
-	public void test() { 
-		List <Txn> txns = getTxns();
-		Map<String, List<Expense>> a =
-			    txns
-			        .stream()
-			        .collect(
-			            Collectors.groupingBy(
-			                Txn::getYearMonth, 
-			                Collectors.mapping(
-			                    getExpense,
-			                    Collectors.toList())));	
-		System.out.println(a);
-	}
 	
 	public void test1() { 
 		List <Txn> txns = getTxns();
@@ -46,27 +31,6 @@ public class TxnsController {
 		System.out.println(a);
 	}
 	
-
-	public void test2() { 
-		List <Txn> txns = getTxns();
-
-		Map<String, Expense > a =
-			    txns
-			        .stream()
-			        .collect(
-			            Collectors.groupingBy(
-			                Txn::getYearMonth, 
-			                Collector.of(
-			      				  Expense::new,
-			      				  ( e,  t) -> e.add(t),
-			      				  (e1, e2) -> new Expense(e1, e2)))
-			            	);
-		
-		a.entrySet().forEach(entry -> {
-		    System.out.println("Key : " + entry.getKey() + " Income : " + entry.getValue().getIncome()+ " Spent : " + entry.getValue().getSpent());
-		}); 
-	}
-	
 	public List<Txn> getTxns() { 
 		try{
 		TxnJSONParser tmp=new TxnJSONParser();
@@ -80,70 +44,46 @@ public class TxnsController {
 		return null;
 	}
 	
-	public void generate() {
-			List <Txn> txns = getTxns();
-			List<Txn> income=txns.stream()
-							.filter(t->t.getAmount()>=0)
-							.collect(Collectors.toList());
-			//System.out.println(income);
-			List<Txn> spent=txns.stream()
-					.filter(t->t.getAmount()<0)
-					.collect(Collectors.toList());
-			//System.out.println(spent);		  
-			// reduce stream to list of objects, for yearMonth with sum amounts for spend and income
-			// reduce stream to one, for average of all 
-			Map<String, Double> spentMap=
-					txns.stream().collect(
-							Collectors.groupingBy(Txn::getYearMonth, 
-							Collectors.reducing(0.0,Txn::getAmount,Double::sum))); 
+	
+	public void process(){
+		 TxnsController tc=new TxnsController();
+		 List <Txn> txns = tc.getTxns();
 
-			
-/*			Map<String, Expense> expenseMap=
-					txns.stream().collect(
-							Collectors.groupingBy(Txn::getYearMonth, getExpense,
-							Collectors.reducing(0.0,Expense::getIncome,Double::sum))); */
-			
-			System.out.println(spentMap);
-		    /*List<Expense> myLocations = txns.getTxns().stream()
-		            .map(getExpense)
-		            .collect(Collectors.<Expense> toList());
-		    
-			Map<String, Double> groupByYearMonthAvg=
-					txns.getTxns().stream().collect(Collectors.groupingBy(
-							Txn::getYearMonth, 
-							Collectors.averagingDouble(Txn::getAmount))); 
+		 Map<String,Activity> myMap =   txns.stream().collect(
+				 Collectors.groupingBy(Txn::getYearMonth, Collector.of(Activity::new, Activity::accept, Activity::combine))
+						 	);
+		// calculate the average node and add to the map 
+		 Activity avg = new Activity(myMap.values().stream().collect(Collectors.averagingDouble(Activity::getSpent)), myMap.values().stream().collect(Collectors.averagingDouble(Activity::getIncome)));
+		 myMap.put("Average", avg);
 
-			*/
-	/*		Double avg = txns.getTxns().stream()
-			//.map(t-> t.getTransaction_time().format(fmtYearMonth))
-			
-			.forEach(System.out::println);*/
-			// from input stream
-			// given Txn,
-			// get stream of positive and negative values 
-			// aggregate positive and negative amounts on year&month into income and spend
-			
-			// reduce to generate the average ?
-			// classic impl
-			// forEach Txn t
-			//  if not exists node(t.year, t.month)  nodeList.addNode (t.year, t.month) 
-			// 	 if t.amount > 0 (credit) 
-			//    node.income += t.amount 
-			//   else
-			//    node.spent -= t.amount
-			//  
-			// Render Nodelist as JSON markup
-	/*		txns.sort();
-			double total=txns.getTxns().stream()
-							  .collect(Collectors.summingDouble(Txn::getAmount));
-			System.out.println(total);
-			System.out.println(txns);*/
-			
-	}
+	    try {
+			OutputStream fos = new FileOutputStream("activity_out_stream.txt");
+			OutputGenerator og=new OutputGenerator(fos);
+
+			og.start();
+			 myMap.entrySet().stream().sorted(Map.Entry.<String, Activity>comparingByKey()).forEach(entry -> {
+				 //System.out.println(entry.getKey()+": { spent: "+currencyFormatter.format(entry.getValue().getSpent())+", income: " + currencyFormatter.format(entry.getValue().getIncome())+"},");
+				 try {
+					og.write(entry);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 });
+			 og.end();
+			fos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	 }
 	
 	public static void main(String[] args) {
 		TxnsController tc=new TxnsController();
-		tc.test2();
+		tc.process();
 	}
 	
 }
