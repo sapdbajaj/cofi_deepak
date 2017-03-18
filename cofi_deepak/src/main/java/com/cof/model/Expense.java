@@ -50,8 +50,12 @@ public class Expense  {
 		count=0;
 	}
 	
-	public double average() {
-        return count > 0 ? ((double) spent+income)/count : 0.0;
+	public double averageSpent() {
+        return count > 0 ? ((double) spent)/count : 0.0;
+    }
+	
+	public double averageIncome() {
+        return count > 0 ? ((double) income)/count : 0.0;
     }
 	
 	public double getSpent() {

@@ -21,10 +21,14 @@ using Java8 streams Transform
 List<Txn> to List<Expense> 
 
 List<Txn> = txns; 
-txns.stream().collect(
-                        Collectors.groupingBy(Txn::getTxnDate) // within each group
+txns.stream().collect( // group the stream of txn by year and month
+                        Collectors.groupingBy(Txn::getTxnDate, // within each group
+                         Collector.of(Expense::new,Expense::add, Expense::combine) // Map Txn to Expense 
+                        )
                 );
 
+// for generating the average of all 
+// 
 given txn stream
      group by yyyy-mm // fold 1 
       within group Map to new object Expense(income, spent) 

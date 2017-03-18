@@ -12,6 +12,13 @@ public class Activity {
 	  count=0;
 	}
 
+	public Activity(double thisSpent, double thisIncome)
+	{
+	  spent = thisSpent;income=thisIncome;
+	  year_month = "Average" ; 
+	  count=0;
+	}
+	
 	public void accept(Txn src)
 	{
 	  if (src.getAmount() > 0 ) {
@@ -30,6 +37,14 @@ public class Activity {
 	  return this;
 	}
 
+	public double averageSpent() {
+        return count > 0 ? ((double) spent)/count : 0.0;
+    }
+	
+	public double averageIncome() {
+        return count > 0 ? ((double) income)/count : 0.0;
+    }
+	
 	public double getSpent()
 	{
 	  return spent;
