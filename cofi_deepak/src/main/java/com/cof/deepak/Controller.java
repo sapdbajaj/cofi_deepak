@@ -14,8 +14,12 @@ import com.cof.model.Txns;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -24,6 +28,7 @@ import javax.json.JsonWriter;
 public class Controller {
 
 	protected Txns to;
+	OptionSet options;
 
 	public void createReq(JsonObject jo, OutputStream os) {
 		JsonWriter jsonWriter = Json.createWriter(os);
@@ -140,14 +145,23 @@ public class Controller {
 		createTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",tjo));	
 	}
 	
-	public void process(String filename){
+	Predicate<Txn> evalDonut=(t)->{
+		return options.has("ignore-donuts") ? !(t.getMerchant().matches("(?i:.*(Donuts|DUNKIN).*)")): true ; 
+		};
+
+	public void process(String filename ){
 		 // process txns
 		 // TODO: Move processing of txns to separate thread, fetching separate stream processing incoming txns concurrently
-		 Map<String,Activity> myMap =   to.getTxns().stream().collect(
+		
+		
+		// Map<String,Activity> myMap =   to.getTxns().stream().filter(evalDonut).collect(
+		Map<String,Activity> myMap =   to.getTxns().stream().filter(evalDonut).collect(
 				 Collectors.groupingBy(Txn::getYearMonth, Collector.of(Activity::new, Activity::accept, Activity::combine))
 						 	);
 		// calculate the average node and add to the map 
-		 Activity avg = new Activity(myMap.values().stream().collect(Collectors.averagingDouble(Activity::getSpent)), myMap.values().stream().collect(Collectors.averagingDouble(Activity::getIncome)));
+		 Activity avg = new Activity(
+				 myMap.values().stream().collect(Collectors.averagingDouble(Activity::getSpent)), 
+				 myMap.values().stream().collect(Collectors.averagingDouble(Activity::getIncome)));
 		 myMap.put("Average", avg);
 
 		// output the process results to file
@@ -177,7 +191,13 @@ public class Controller {
 	 }
 	
 	public static void main(String[] args) throws Exception {
+		OptionParser parser = new OptionParser();
+        parser.accepts( "ignore-donuts" );
+        parser.accepts( "crystal-ball" );
+        parser.accepts( "ignore-cc-payments" );
+
 		Controller ctrl=new Controller();
+        ctrl.options = parser.parse( args);
 		ctrl.initTxns();
 		ctrl.process("activity_out.txt");
 	}
