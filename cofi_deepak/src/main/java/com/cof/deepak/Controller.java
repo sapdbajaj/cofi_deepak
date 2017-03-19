@@ -109,7 +109,7 @@ public class Controller {
 		 }
 	}
 	
-	public void createTxns(HttpsURLConnection httpConnection){
+	public void addTxns(HttpsURLConnection httpConnection){
 		 	try{
 		 		TxnJSONParser tmp=new TxnJSONParser();
 				 tmp.parse(httpConnection.getInputStream(), to);								
@@ -142,12 +142,12 @@ public class Controller {
 		JsonObject tjo=w.getTxns(null);
 		System.out.println("Txns Req JSON String\n"+tjo);
 		//createRsp(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",to));
-		createTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",tjo));	
+		addTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/get-all-transactions",tjo));	
 		System.out.println (" ALL Count"+to.getTxns().size());
 		if (options.has("crystal-ball")) {
 			tjo=null;
 			tjo=w.getTxns(options);
-			createTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/projected-transactions-for-month",tjo));
+			addTxns(doReq("https://2016.api.levelmoney.com/api/v2/core/projected-transactions-for-month",tjo));
 		}
 		System.out.println (" Total Count"+to.getTxns().size());
 	}
