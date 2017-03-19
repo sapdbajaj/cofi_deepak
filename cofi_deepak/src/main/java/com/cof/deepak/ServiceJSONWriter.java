@@ -3,6 +3,7 @@ package com.cof.deepak;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import joptsimple.OptionSet;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -12,9 +13,13 @@ import com.cof.model.User;
 
 public class ServiceJSONWriter {
 
-	public JsonObject getTxns(){
+	public JsonObject getTxns(OptionSet options){
 		 	JsonObjectBuilder userBuilder = Json.createObjectBuilder();
 			userBuilder.add("args", createCore());
+			if (options != null && options.has("crystal-ball")) { 
+				userBuilder.add("year", 2017);
+				userBuilder.add("month", 3);
+			}
 			return userBuilder.build();
 	   }
 	

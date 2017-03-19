@@ -31,23 +31,23 @@ public class TxnJSONParser {
 		switch (event) {
 		
 		case START_OBJECT:
-			if (txns !=null ) {
+			if (state==State.TXN ) {
 				t = new Txn();
-				if(txns.getTxns()==null)txns.setTxns(new ArrayList<Txn> ());
 				txns.getTxns().add(t);
-				if (state !=State.TXN ) state = State.TXN ; 
 			}
 			else{
 				state = State.TXNS;				
 			}
+			
 			break;
 			
 		case END_OBJECT:
-			if (state!=State.TXN && txns==null || txns.getTxns().isEmpty()) throw new TxnException("No Transactions found");
+			if (state!=State.TXN && (txns==null || txns.getTxns()==null||txns.getTxns().isEmpty())) throw new TxnException("No Transactions found");
 			break;
 			
 		case START_ARRAY:
-			txns.setTxns(new ArrayList<Txn>());
+			if(txns.getTxns()==null)txns.setTxns(new ArrayList<Txn> ());
+			state = State.TXN ;
 			break;
 			
 		case END_ARRAY:

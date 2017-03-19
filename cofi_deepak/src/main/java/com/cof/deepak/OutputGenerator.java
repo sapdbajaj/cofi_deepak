@@ -35,8 +35,8 @@ public class OutputGenerator {
 		
 		//myMap.entrySet().stream().sorted(Map.Entry.<String, Activity>comparingByKey()).forEach(entry -> {
 			jsonGenerator.writeStartObject(entry.getKey()); // { for key 
-			jsonGenerator.write("spent :", currencyFormatter.format(entry.getValue().getSpent())); 
-			jsonGenerator.write("income :", currencyFormatter.format(entry.getValue().getIncome())); 
+			jsonGenerator.write("spent", currencyFormatter.format(entry.getValue().getSpent())); 
+			jsonGenerator.write("income", currencyFormatter.format(entry.getValue().getIncome())); 
 			jsonGenerator.writeEnd(); // }	
 		 //}); 
 		
