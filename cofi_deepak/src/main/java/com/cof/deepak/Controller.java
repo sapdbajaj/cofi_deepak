@@ -166,9 +166,7 @@ public class Controller {
 		
 	public void process(String filename ){
 		 List<Txn> tmpTxns= to.getTxns();
-		 // process txns
-		 // TODO: Move processing of txns to separate thread, fetching separate stream processing incoming txns concurrently
-		
+		 // process txns		
 		 if (options.has("ignore-cc-payments")) { 
 			 Map<Boolean, List<Txn>> splitTxns = to.getTxns().stream().collect(Collectors.partitioningBy(t-> Collections.frequency(to.getTxns(),t)>1));
 			 System.out.println("Dup COUNT " + splitTxns.get(true).size());
