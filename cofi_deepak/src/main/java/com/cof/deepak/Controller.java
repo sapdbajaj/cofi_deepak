@@ -13,6 +13,8 @@ import com.cof.model.Txns;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -28,6 +30,7 @@ import javax.json.JsonWriter;
 public class Controller {
 
 	protected Txns to;
+	List<Txn> dTxns;
 	OptionSet options;
 
 	public void createReq(JsonObject jo, OutputStream os) {
@@ -156,13 +159,29 @@ public class Controller {
 		return options.has("ignore-donuts") ? !(t.getMerchant().matches("(?i:.*(Donuts|DUNKIN).*)")): true ; 
 		};
 
+	// we can use the filter, if inline dup removal is needed
+	Predicate<Txn> evalExist=(t)->{
+		return options.has("ignore-cc-payments") && dTxns != null ? !(dTxns.contains(t)): true ; 
+		};
+		
 	public void process(String filename ){
+		 List<Txn> tmpTxns= to.getTxns();
 		 // process txns
 		 // TODO: Move processing of txns to separate thread, fetching separate stream processing incoming txns concurrently
 		
-		
-		// Map<String,Activity> myMap =   to.getTxns().stream().filter(evalDonut).collect(
-		Map<String,Activity> myMap =   to.getTxns().stream().filter(evalDonut).collect(
+		 if (options.has("ignore-cc-payments")) { 
+			// Get the distinct Txn list 
+			// Filter current txn if in distinct 
+			 Map<Boolean, List<Txn>> splitTxns = to.getTxns().stream().collect(Collectors.partitioningBy(t-> Collections.frequency(to.getTxns(),t)>1));
+			 System.out.println("Dup COUNT " + splitTxns.get(true).size());
+			 System.out.println("Non Dup COUNT " + splitTxns.get(false).size());
+			 dTxns = splitTxns.get(true);
+			 tmpTxns = splitTxns.get(false);
+			 System.out.println(" DUPLICATES "); 
+			 splitTxns.get(true).forEach(System.out::println);
+		 }
+		 
+		Map<String,Activity> myMap =   tmpTxns.stream().filter(evalDonut).collect(
 				 Collectors.groupingBy(Txn::getYearMonth, Collector.of(Activity::new, Activity::accept, Activity::combine))
 						 	);
 		// calculate the average node and add to the map 

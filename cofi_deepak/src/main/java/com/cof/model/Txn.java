@@ -1,12 +1,13 @@
 package com.cof.model;
 
-import java.time.LocalDate;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 
 public class Txn  {
-
-	/*@Override
+	final static long HOURS24 = 24 * 60 * 60 ;
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -18,12 +19,14 @@ public class Txn  {
 		if (transaction_time == null) {
 			if (other.transaction_time != null)
 				return false;
-		} else if (transaction_time.getYear()!=other.transaction_time.getYear() || transaction_time.getMonth()!=other.transaction_time.getMonth())
+		} else if (Math.abs(Duration.between(transaction_time, other.transaction_time).getSeconds()) > HOURS24 || Math.abs(amount)!=Math.abs(other.amount))
 			return false;
 		return true;
-	}*/
+	}
 
-
+	public boolean isEqual(Txn t){
+		return equals(t);
+	}
 	@Override
 	public String toString() {
 		return "Txn [amount=" + amount + ", isPending=" + isPending + ", aggregation_time=" + aggregation_time
@@ -153,16 +156,16 @@ public class Txn  {
 	private String raw_merchant;
 	private String categorization;
 	private String merchant;
-	private LocalDate transaction_time;
+	private LocalDateTime transaction_time;
 	
 	public String getYearMonth() {
 		return transaction_time.format(fmtYearMonth);
 	}
-	public LocalDate getTransaction_time() {
+	public LocalDateTime getTransaction_time() {
 		return transaction_time;
 	}
 
-	public void setTransaction_time(LocalDate transaction_time) {
+	public void setTransaction_time(LocalDateTime transaction_time) {
 		this.transaction_time = transaction_time;
 	}
 	

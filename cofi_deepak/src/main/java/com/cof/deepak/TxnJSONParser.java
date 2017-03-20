@@ -3,7 +3,7 @@ package com.cof.deepak;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -148,7 +148,7 @@ public class TxnJSONParser {
 			break;
 		case "transaction-time":
 			String tmp[]=value.split(Pattern.quote("."));
-			t.setTransaction_time(LocalDate.parse(tmp[0],DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+			t.setTransaction_time(LocalDateTime.parse(tmp[0],DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 			break;
 		default:
 			System.out.println("Unkonwn Key="+key);
