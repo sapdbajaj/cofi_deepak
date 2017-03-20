@@ -199,7 +199,6 @@ public class Controller {
 				 try {
 					og.write(entry);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			 });
