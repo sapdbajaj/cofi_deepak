@@ -170,8 +170,6 @@ public class Controller {
 		 // TODO: Move processing of txns to separate thread, fetching separate stream processing incoming txns concurrently
 		
 		 if (options.has("ignore-cc-payments")) { 
-			// Get the distinct Txn list 
-			// Filter current txn if in distinct 
 			 Map<Boolean, List<Txn>> splitTxns = to.getTxns().stream().collect(Collectors.partitioningBy(t-> Collections.frequency(to.getTxns(),t)>1));
 			 System.out.println("Dup COUNT " + splitTxns.get(true).size());
 			 System.out.println("Non Dup COUNT " + splitTxns.get(false).size());
