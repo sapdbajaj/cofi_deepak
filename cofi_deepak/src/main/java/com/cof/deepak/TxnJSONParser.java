@@ -18,7 +18,7 @@ import com.cof.model.State;
 
 public class TxnJSONParser {
 
-	public static final String FILE_NAME = "txn.json";
+	private static final String DEFAULT_FILENAME = "txn.json";
 	
 	public void parse(InputStream is, Txns txns){
 	JsonParser jsonParser = Json.createParser(is);
@@ -87,7 +87,7 @@ public class TxnJSONParser {
 	
 	public static void main(String[] args) throws IOException {
 		TxnJSONParser tmp=new TxnJSONParser();
-		FileInputStream fis=new FileInputStream(FILE_NAME);
+		FileInputStream fis=new FileInputStream(DEFAULT_FILENAME);
 		Txns txns=new Txns();
 		tmp.parse(fis, txns);
 		System.out.println(txns);
@@ -151,8 +151,8 @@ public class TxnJSONParser {
 			t.setTransaction_time(LocalDateTime.parse(tmp[0],DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 			break;
 		default:
-			System.out.println("Unkonwn Key="+key);
-				
+			//System.out.println("Unkonwn Key="+key);
+			break;	
 		}
 	}
 

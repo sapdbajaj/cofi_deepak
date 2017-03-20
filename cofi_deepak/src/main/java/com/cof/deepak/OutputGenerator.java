@@ -16,6 +16,9 @@ import com.cof.model.Activity;
 public class OutputGenerator {
 	final public static NumberFormat currencyFormatter = 
 	        NumberFormat.getCurrencyInstance(Locale.getDefault());
+	final public static String SPENT="spent";
+	final public static String INCOME="income";
+	final private static String DEFAULT_FILENAME="activity_out_stream.txt";
 
 	JsonGenerator jsonGenerator;
 	
@@ -35,15 +38,15 @@ public class OutputGenerator {
 		
 		//myMap.entrySet().stream().sorted(Map.Entry.<String, Activity>comparingByKey()).forEach(entry -> {
 			jsonGenerator.writeStartObject(entry.getKey()); // { for key 
-			jsonGenerator.write("spent", currencyFormatter.format(entry.getValue().getSpent())); 
-			jsonGenerator.write("income", currencyFormatter.format(entry.getValue().getIncome())); 
+			jsonGenerator.write(SPENT, currencyFormatter.format(entry.getValue().getSpent())); 
+			jsonGenerator.write(INCOME, currencyFormatter.format(entry.getValue().getIncome())); 
 			jsonGenerator.writeEnd(); // }	
 		 //}); 
 		
 	}
 	
 	public static void main(String[] args) throws IOException {
-		OutputStream fos = new FileOutputStream("activity_out_stream.txt");
+		OutputStream fos = new FileOutputStream(DEFAULT_FILENAME);
 		//OutputGenerator og=new OutputGenerator(fos);
 
 		fos.close();

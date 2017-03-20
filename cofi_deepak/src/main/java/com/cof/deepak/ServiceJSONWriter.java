@@ -2,6 +2,7 @@ package com.cof.deepak;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Map ; 
 
 import joptsimple.OptionSet;
 import javax.json.Json;
@@ -13,13 +14,10 @@ import com.cof.model.User;
 
 public class ServiceJSONWriter {
 
-	public JsonObject getTxns(OptionSet options){
+	public JsonObject getTxns(Map<String, Integer> options){
 		 	JsonObjectBuilder userBuilder = Json.createObjectBuilder();
 			userBuilder.add("args", createCore());
-			if (options != null && options.has("crystal-ball")) { 
-				userBuilder.add("year", 2017);
-				userBuilder.add("month", 3);
-			}
+			if (options != null) options.forEach((k, v) -> userBuilder.add(k, v));
 			return userBuilder.build();
 	   }
 	
@@ -54,7 +52,7 @@ public class ServiceJSONWriter {
 		//write to file
 		OutputStream os = new FileOutputStream("c:/users/deepa/Downloads/user.txt");
 		JsonObject jo=w.createLogin();
-		Controller ctrl=new Controller();
+		Controller ctrl=new Controller(args);
 		ctrl.createReq(jo, os);
 		System.out.println("User JSON String\n"+jo);		
 	}
